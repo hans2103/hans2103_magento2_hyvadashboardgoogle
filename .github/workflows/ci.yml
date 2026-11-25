@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: openssl
+          coverage: none
+          tools: composer:v2
+
+      - name: Lint PHP
+        run: find . -path ./.git -prune -o \( -name '*.php' -o -name '*.phtml' \) -print0 | xargs -0 -n1 php -l
+
+      - name: Validate XML
+        run: |
+          sudo apt-get install -y -qq libxml2-utils > /dev/null
+          find etc view -name '*.xml' -print0 | xargs -0 xmllint --noout
+
+      - name: Validate composer.json
+        run: composer validate --no-check-publish --no-check-lock
+
+      # The unit tests need Magento and the Hyvä Admin Dashboard packages (licensed, not installable in CI).
+      # Run them in a Magento install: vendor/bin/phpunit -c app/code/Hans2103/HyvaDashboardGoogle/phpunit.xml.dist

@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # bijv. v26.48.1
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          if ! [[ "$VERSION" =~ ^[0-9]{2}\.[0-9]{1,2}\.[0-9]+$ ]]; then
+            echo "Error: ongeldig versieformaat in tag ($VERSION), verwacht YY.WW.PATCH"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # De release notes zijn de sectie "## {version}" uit CHANGELOG.md. Ontbreekt die, dan geen release.
+      - name: Release notes from CHANGELOG.md
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          awk -v v="$VERSION" '
+            $0 == "## " v { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md | sed -e '/./,$!d' > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "Error: geen sectie '## $VERSION' in CHANGELOG.md"
+            exit 1
+          fi
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          gh release create "v${VERSION}" \
+            --title "Release v${VERSION}" \
+            --notes-file release_notes.md \
+            --verify-tag
