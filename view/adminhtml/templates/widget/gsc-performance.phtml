@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Hyvä Dashboard Google for Magento 2
+ *
+ * Renders Search Console clicks/impressions with the dashboard's own lineChartWidget Alpine component.
+ *
+ * @copyright  (C) 2026 Hans Kuijpers <https://hkweb.nl>
+ * @license    GPL-2.0-or-later; see LICENSE.txt
+ */
+
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$widgetInstance = $block->getData('widget_instance');
+if (!$widgetInstance || !($displayData = $widgetInstance->getDisplayData())) {
+    return;
+}
+$instanceId = (int)$widgetInstance->getInstanceId();
+?>
+<?php if (isset($displayData['message'])): ?>
+    <div class="message"><?= $escaper->escapeHtml($displayData['message']) ?></div>
+<?php else: ?>
+    <div x-data="lineChartWidget"
+         @update-chart-size-<?= /* @noEscape */ $instanceId ?>.window="handleResize"
+         x-init="initChart"
+         data-chart-data="<?= $escaper->escapeHtmlAttr(json_encode($displayData['chart'] ?? [])) ?>"
+         data-chart-type="line">
+        <div id="chart_<?= /* @noEscape */ $instanceId ?>"></div>
+    </div>
+    <p class="text-sm m-0"><?= $escaper->escapeHtml(__('Google search data until %1.', $displayData['until'] ?? '')) ?></p>
+<?php endif; ?>

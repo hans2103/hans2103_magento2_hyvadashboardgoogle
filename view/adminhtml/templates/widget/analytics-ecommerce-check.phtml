@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * Hyvä Dashboard Google for Magento 2
+ *
+ * @copyright  (C) 2026 Hans Kuijpers <https://hkweb.nl>
+ * @license    GPL-2.0-or-later; see LICENSE.txt
+ */
+
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$widgetInstance = $block->getData('widget_instance');
+if (!$widgetInstance || !($data = $widgetInstance->getDisplayData())) {
+    return;
+}
+
+$money = static fn (float $amount, string $currency): string => trim($currency . ' ' . number_format($amount, 2, ',', '.'));
+$pct = static fn (?float $value): string => $value === null ? '–' : sprintf('%+.1f%%', $value);
+$colours = ['ok' => '', 'warning' => 'color:#b45309;font-weight:600', 'alert' => 'color:#b91c1c;font-weight:700'];
+$style = static fn (?string $severity): string => $colours[$severity ?? 'ok'] ?? '';
+$currency = (string)($data['currency'] ?? '');
+?>
+<?php if (isset($data['message'])): ?>
+    <div class="message"><?= $escaper->escapeHtml($data['message']) ?></div>
+<?php else: ?>
+    <table>
+        <caption><?= $escaper->escapeHtml(__('GA4 vs Magento, %1', $data['period'])) ?></caption>
+        <thead>
+            <tr>
+                <th></th>
+                <th><?= $escaper->escapeHtml(__('Magento')) ?></th>
+                <th><?= $escaper->escapeHtml(__('GA4')) ?></th>
+                <th><?= $escaper->escapeHtml(__('Difference')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><?= $escaper->escapeHtml(__('Orders')) ?></td>
+                <td><?= (int)$data['magento']['count'] ?></td>
+                <td><?= (int)$data['ga4']['count'] ?></td>
+                <td style="<?= $escaper->escapeHtmlAttr($style($data['count_severity'])) ?>"><?= $escaper->escapeHtml($pct($data['count_diff_pct'])) ?></td>
+            </tr>
+            <tr>
+                <td><?= $escaper->escapeHtml(__('Revenue')) ?></td>
+                <td><?= $escaper->escapeHtml($money((float)$data['magento']['revenue'], $currency)) ?></td>
+                <td><?= $escaper->escapeHtml($money((float)$data['ga4']['revenue'], (string)$data['ga4_currency'])) ?></td>
+                <td style="<?= $escaper->escapeHtmlAttr($style($data['revenue_severity'])) ?>"><?= $escaper->escapeHtml($pct($data['revenue_diff_pct'])) ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <?php if ($data['currency_mismatch']): ?>
+        <p class="message"><?= $escaper->escapeHtml(__('The store currency (%1) differs from the GA4 property currency (%2), so revenue is not compared.', $currency, $data['ga4_currency'])) ?></p>
+    <?php endif; ?>
+
+    <h3 class="text-base font-bold"><?= $escaper->escapeHtml(__('Missing in GA4: %1 orders', (int)$data['missing_total'])) ?></h3>
+    <?php if ($data['missing']): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Order')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Date')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Amount')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Payment Method')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($data['missing'] as $order): ?>
+                    <tr class="clickable-row">
+                        <td><a href="<?= $escaper->escapeUrl($order['url']) ?>"><?= $escaper->escapeHtml($order['increment_id']) ?></a></td>
+                        <td><?= $escaper->escapeHtml($order['date']) ?></td>
+                        <td><?= $escaper->escapeHtml($money((float)$order['amount'], $currency)) ?></td>
+                        <td><?= $escaper->escapeHtml($order['payment_method']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($data['missing_total'] > count($data['missing'])): ?>
+            <p class="text-sm"><?= $escaper->escapeHtml(__('And %1 more.', $data['missing_total'] - count($data['missing']))) ?></p>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($data['extra_count'] > 0): ?>
+        <p class="text-sm"><?= $escaper->escapeHtml(__('In GA4 but not in Magento (this store view, these statuses): %1', (int)$data['extra_count'])) ?></p>
+    <?php endif; ?>
+    <?php if (($data['other_count'] ?? 0) > 0): ?>
+        <p class="message"><?= $escaper->escapeHtml(__('GA4 grouped %1 transactions as "(other)" because the report is too large. Some orders listed as missing may be in GA4. Choose a shorter period.', (int)$data['other_count'])) ?></p>
+    <?php endif; ?>
+    <?php if ($data['not_set_count'] > 0): ?>
+        <p class="text-sm"><?= $escaper->escapeHtml(__('GA4 transactions without transaction ID: %1', (int)$data['not_set_count'])) ?></p>
+    <?php endif; ?>
+
+    <p class="text-sm" style="opacity:.7">
+        <?= $escaper->escapeHtml(__('Up to and including yesterday (%1).', $data['timezone'])) ?>
+        <?php if ($data['storefront_only']): ?>
+            <?= $escaper->escapeHtml(__('Only orders placed in the storefront.')) ?>
+        <?php endif; ?>
+    </p>
+<?php endif; ?>

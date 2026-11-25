@@ -1,0 +1,34 @@
+{
+    "name": "hans2103/magento2-hyva-dashboard-google",
+    "description": "Google Analytics 4 and Google Search Console widgets for the Hyvä Admin Dashboard: top Google search queries, search performance and a GA4 vs Magento e-commerce check.",
+    "type": "magento2-module",
+    "license": "GPL-2.0-or-later",
+    "keywords": ["magento2", "hyva", "admin dashboard", "google analytics", "ga4", "search console"],
+    "homepage": "https://github.com/hans2103/hans2103_magento2_hyvadashboardgoogle",
+    "authors": [
+        {
+            "name": "Hans Kuijpers",
+            "homepage": "https://hkweb.nl"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "guzzlehttp/guzzle": "^7.0",
+        "magento/framework": "^103.0",
+        "magento/module-config": "*",
+        "magento/module-sales": "*",
+        "magento/module-store": "*",
+        "hyva-themes/commerce-module-admin-dashboard": "^2.0",
+        "hyva-themes/commerce-module-admin-dashboard-api": "^3.0.1"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Hans2103\\HyvaDashboardGoogle\\": ""
+        }
+    }
+}

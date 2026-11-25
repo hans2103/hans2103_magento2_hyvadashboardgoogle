@@ -1,0 +1,6 @@
+/vendor/
+.superpowers/
+*.json.key
+service-account*.json
+.phpunit.result.cache
+.idea/

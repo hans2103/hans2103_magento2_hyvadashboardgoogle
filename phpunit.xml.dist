@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Run from the Magento root, with the module in app/code/Hans2103/HyvaDashboardGoogle:
+    vendor/bin/phpunit -c app/code/Hans2103/HyvaDashboardGoogle/phpunit.xml.dist
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../../../vendor/phpunit/phpunit/phpunit.xsd"
+         colors="true"
+         cacheDirectory="../../../../var/cache/phpunit-hans2103-hyvadashboardgoogle"
+         bootstrap="../../../../dev/tests/unit/framework/bootstrap.php">
+    <testsuites>
+        <testsuite name="Hans2103_HyvaDashboardGoogle">
+            <directory>Test/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="date.timezone" value="UTC"/>
+    </php>
+</phpunit>

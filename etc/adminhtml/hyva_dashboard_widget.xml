@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Hyva_AdminDashboardApi:etc/adminhtml/hyva_dashboard_widget.xsd">
+    <widget id="hans2103_gsc_top_queries">
+        <class>Hans2103\HyvaDashboardGoogle\Model\Widget\GscTopQueries</class>
+        <title translate="true">Google: Top search queries</title>
+        <acl>Hans2103_HyvaDashboardGoogle::widgets</acl>
+        <category>marketing</category>
+        <tags>google,search console,seo,queries</tags>
+        <icon>search</icon>
+        <display_type>table</display_type>
+        <min_height>6</min_height>
+        <min_width>2</min_width>
+        <cache_lifetime>21600</cache_lifetime>
+    </widget>
+    <widget id="hans2103_gsc_performance">
+        <class>Hans2103\HyvaDashboardGoogle\Model\Widget\GscPerformance</class>
+        <title translate="true">Google: Search performance</title>
+        <acl>Hans2103_HyvaDashboardGoogle::widgets</acl>
+        <category>marketing</category>
+        <tags>google,search console,seo,clicks,impressions</tags>
+        <icon>chart-line</icon>
+        <display_type>template</display_type>
+        <template>Hans2103_HyvaDashboardGoogle::widget/gsc-performance.phtml</template>
+        <min_height>8</min_height>
+        <min_width>2</min_width>
+        <full_screen>true</full_screen>
+        <cache_lifetime>21600</cache_lifetime>
+    </widget>
+    <widget id="hans2103_ga4_ecommerce_check">
+        <class>Hans2103\HyvaDashboardGoogle\Model\Widget\Ga4EcommerceCheck</class>
+        <title translate="true">GA4 vs Magento: e-commerce check</title>
+        <acl>Hans2103_HyvaDashboardGoogle::widgets</acl>
+        <category>sales</category>
+        <tags>google,analytics,ga4,ecommerce,tracking,orders</tags>
+        <icon>scale</icon>
+        <display_type>template</display_type>
+        <template>Hans2103_HyvaDashboardGoogle::widget/analytics-ecommerce-check.phtml</template>
+        <min_height>8</min_height>
+        <min_width>2</min_width>
+        <full_screen>true</full_screen>
+        <cache_lifetime>3600</cache_lifetime>
+    </widget>
+</config>

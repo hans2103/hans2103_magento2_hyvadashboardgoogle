@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Hans2103\HyvaDashboardGoogle\Model\Google\TokenProvider">
+        <arguments>
+            <argument name="httpClient" xsi:type="object">GuzzleHttp\Client</argument>
+        </arguments>
+    </type>
+    <type name="Hans2103\HyvaDashboardGoogle\Model\Google\HttpTransport">
+        <arguments>
+            <argument name="httpClient" xsi:type="object">GuzzleHttp\Client</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="hans2103_dashboard_google_test" xsi:type="object">Hans2103\HyvaDashboardGoogle\Console\Command\TestConnection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Hans2103\HyvaDashboardGoogle\Console\Command\TestConnection">
+        <arguments>
+            <argument name="tokenProvider" xsi:type="object">Hans2103\HyvaDashboardGoogle\Model\Google\TokenProvider\Proxy</argument>
+            <argument name="transport" xsi:type="object">Hans2103\HyvaDashboardGoogle\Model\Google\HttpTransport\Proxy</argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="hyva_dashboard_google" translate="label" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Hyvä Dashboard Google</label>
+            <tab>service</tab>
+            <resource>Hans2103_HyvaDashboardGoogle::config</resource>
+            <group id="general" translate="label comment" sortOrder="10" showInDefault="1">
+                <label>Google Service Account</label>
+                <comment><![CDATA[One service account is used for all store views. Add its client e-mail address as <strong>Viewer</strong> on every GA4 property and as a <strong>Restricted</strong> user on every Search Console property. Test with <code>bin/magento hans2103:dashboard-google:test</code>.]]></comment>
+                <field id="service_account_key" translate="label comment" type="obscure" sortOrder="10" showInDefault="1">
+                    <label>Service Account JSON Key</label>
+                    <comment>Paste the complete JSON key file. It is stored encrypted and never shown again.</comment>
+                    <backend_model>Hans2103\HyvaDashboardGoogle\Model\Config\Backend\ServiceAccountKey</backend_model>
+                </field>
+                <field id="response_cache_lifetime" translate="label comment" type="text" sortOrder="20" showInDefault="1">
+                    <label>Cache Lifetime for Google Responses (seconds)</label>
+                    <comment>0 disables this cache (the dashboard still caches each widget). Errors are always cached for 5 minutes.</comment>
+                    <validate>required-entry validate-digits validate-zero-or-greater</validate>
+                </field>
+            </group>
+            <group id="ga4" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Analytics 4</label>
+                <field id="property_id" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>GA4 Property ID</label>
+                    <comment>Numeric GA4 property ID (Admin > Property settings), not the G-XXXX measurement ID.</comment>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="hostname_filter" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hostname Filter</label>
+                    <comment>Only needed when several store views share one GA4 property, e.g. www.example.com. Leave empty otherwise.</comment>
+                </field>
+            </group>
+            <group id="gsc" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Search Console</label>
+                <field id="site_url" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Search Console Property</label>
+                    <comment>Domain property as sc-domain:example.com, or URL-prefix property as https://www.example.com/</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
